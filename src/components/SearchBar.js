@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { dataChange } from '../actions';
 
-class ProductGrid extends React.Component {
+class SearchBar extends React.Component {
 
     componentDidMount() {
         this.props.fetchProducts();
@@ -30,3 +31,14 @@ class ProductGrid extends React.Component {
     }
 }
 
+const mapStateToProps = state => {
+
+    let items = state.products.slice(skip, skip + take);
+    console.log();
+
+    return { 
+        searchType: items,
+    };
+}
+
+export default connect(mapStateToProps, { fetchBrands, fetchCats, fetchSubCats, sierraSearched, engineSearched, interSearched })(SearchBar);
