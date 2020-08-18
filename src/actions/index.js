@@ -1,7 +1,7 @@
  // import _ from 'lodash';
 import advancedSearch from '../apis/AdvancedSearch';
 //import filterSet from '../apis/FilterSet';
-
+import { trackPromise } from 'react-promise-tracker';
 
 // export const dataStateChange = (e, getState) => {
 //     return {
@@ -18,13 +18,14 @@ export const fetchFilters = () => async dispatch => {
     dispatch({type: 'FETCH_FILTERS', payload: fresponse });
 };
 
+
 export const fetchProducts = () => async dispatch => {
-    const response = await advancedSearch.get('FilterSet/Details/Gauges');
+    const response = await trackPromise(advancedSearch.get('FilterSet/Details/Gauges'));
     //console.log (response.data.Data[0].filterValue[0].value[0]);
     dispatch({type: 'FETCH_PRODUCTS', payload: response.data.Data });
 };
 
-export const itemsPageChange = (paging) => dispatch =>{
+export const itemsPageChange = (paging) => dispatch => {
     dispatch({
         type: 'ITEMS_PAGE_CHANGE',
         ...paging

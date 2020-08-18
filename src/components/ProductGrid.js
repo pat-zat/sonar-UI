@@ -3,19 +3,38 @@ import { connect } from 'react-redux';
 import { Grid } from '@progress/kendo-react-grid';
 import { GridColumn } from '@progress/kendo-react-grid';
 import { process } from '@progress/kendo-data-query';
+import { usePromiseTracker } from "react-promise-tracker";
+import { trackPromise } from 'react-promise-tracker';
 
 import { fetchProducts } from '../actions';
 import { fetchFilters } from '../actions';
 import { itemsPageChange } from '../actions';
 import { dataChange } from '../actions';
 
+
+ const LoadingIndicator = props => {
+    const { promiseInProgress } = usePromiseTracker();
+       return (
+        promiseInProgress && 
+        <h1>Hey some async call in progress ! </h1>
+      );  
+     }
+
+     const ChangeIndicator = props => {
+         //need to set pending to true if new datastate != old datastate and 
+        const { pending } = usePromiseTracker();
+           return (
+            pending && <h1>Hey some async call in progress ! </h1>
+          );  
+         }
+
 class ProductGrid extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             left: false,
-            dataState: { take: 10, skip: 0 },           
-
+            dataState: { take: 10, skip: 0 },
+            allItems: this.props.products           
         };
     }
 
@@ -24,6 +43,7 @@ class ProductGrid extends React.Component {
         this.props.fetchFilters();
     }
     dataStateChange = (e) => {
+        let data = this.props.products;
         this.setState({
             dataState: e.data
         });
@@ -33,8 +53,14 @@ class ProductGrid extends React.Component {
     pageChange = (e) => {
         this.props.itemsPageChange(e.page);
     }
-    // dataStateChange = (e) => {
-    //     this.props.dataChange(e.data);
+    // groupChange = (e) => {
+    //     this.props.itemsPageChange(e.page);
+    // }
+    // sortChange = (e) => {
+    //     this.props.itemsPageChange(e.page);
+    // }
+    // filterChange = (e) => {
+    //     this.props.itemsPageChange(e.page);
     // }
 
     renderList() {
@@ -69,15 +95,21 @@ class ProductGrid extends React.Component {
     }
 
     render () {
-        return <div className="relaxed ui divided list">{this.renderList()}</div>
+        return <div className="relaxed ui divided list">{this.renderList()}<LoadingIndicator /></div>
     }
 }
 
 
 
 const mapStateToProps = state => {
+
+
+    // sort: state.sort,
+    // group: state.group,
+    // filter: state.filter,
+    //page: state.page,
+    //pageSize: state.pageSize
    
-    //state.dataChanging
     let { skip, take } = state.itemPaging;
     let newDataState = state.dataChanging;
     let total = state.products.length;
